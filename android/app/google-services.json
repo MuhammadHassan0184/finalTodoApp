@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1087250356574",
+    "project_id": "finaltodoapp-bf947",
+    "storage_bucket": "finaltodoapp-bf947.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087250356574:android:4c63bc873eacedb1d797cf",
+        "android_client_info": {
+          "package_name": "com.example.finaltodoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpjSmv6zHlcMqThdbp9SsNmxIBGXC8nwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
