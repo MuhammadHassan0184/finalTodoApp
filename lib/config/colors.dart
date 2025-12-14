@@ -7,4 +7,5 @@ class AppColors {
   static final Color black = Color(0xFF000000); 
   static final Color white = Color(0xFFFFFFFF); 
   static final Color checkbox = Color(0xFF58EEA5); 
+  static final Color golden = Color(0xFFE1C16E); 
 }

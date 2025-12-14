@@ -1,9 +1,11 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finaltodoapp/config/colors.dart';
-import 'package:finaltodoapp/view/Services/database_service.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:finaltodoapp/Services/database_service.dart';
+import 'package:finaltodoapp/view/claender_screen.dart';
+import 'package:finaltodoapp/view/login_screen.dart';
+import 'package:finaltodoapp/view/note_pad_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -22,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Stream? todoStream;
   getontheload() async {
-    // todoStream = await DatabaseService().getTask(personal?"Personal":office?"Office");
     todoStream = await DatabaseService().getTask(
       personal ? "Personal" : "Office",
     );
@@ -48,13 +49,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Container(
                       margin: EdgeInsets.all(10),
                       decoration: BoxDecoration(
+                        color: Colors.white,
                         border: Border.all(color: AppColors.dgrey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: CheckboxListTile(
-                        activeColor: AppColors.checkbox,
-                        title: Text(docsSnap["Work"]),
-
+                        activeColor: AppColors.dgrey,
+                        title: Text(
+                          docsSnap["Work"],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
                         value: docsSnap["Yes"],
                         onChanged: (value) async {
                           await DatabaseService().tickMethod(
@@ -62,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             personal ? "Personal" : "Office",
                           );
                           setState(() {
-                            Future.delayed(Duration(minutes: 2), () {
+                            Future.delayed(Duration(minutes: 1), () {
                               DatabaseService().removeMethod(
                                 docsSnap.id,
                                 personal ? "Personal" : "Office",
@@ -80,20 +85,103 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─────────────────────────────────────────────
+  // LOGOUT FUNCTION
+  // ─────────────────────────────────────────────
+  void logout() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Logout", style: TextStyle(fontWeight: FontWeight.bold),),
+        content: Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black
+            ),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: Text("Logout", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: AppColors.black,
+              ),
+              child: Text(
+                "Menu",
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+            SizedBox(height: 10,),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text("Logout"),
+              onTap: logout,
+            ),
+          ],
+        ),
+      ),
+
+      appBar: AppBar(
+        leading: Builder(
+          builder: (context) => IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: Icon(Icons.menu, size: 35),
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              IconButton(onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> NotePadScreen()));
+              }, icon: Icon(Icons.note_alt, size: 40, color: AppColors.black,)),
+              SizedBox(width: 10,),
+              InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> CalendarScreen()));
+            },
+            child: Container(
+              margin: EdgeInsets.all(6),
+              width: 35,
+              height: 35,
+              decoration: BoxDecoration(
+                color: Colors.transparent
+              ),
+              child: Image(image: AssetImage("assets/calendar.png")),
+            ),
+          ),
+            ],
+          )
+        ],
+      ),
+
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xFFD6D5D5),
-              Colors.white,
-              const Color.from(alpha: 1, red: 0.631, green: 0.631, blue: 0.631),
-            ],
-            begin: AlignmentGeometry.topRight,
-            end: AlignmentGeometry.bottomLeft,
+          image: DecorationImage(
+            image: AssetImage("assets/bookbg.jpg"),
+            fit: BoxFit.cover,
           ),
         ),
         child: Column(
@@ -103,10 +191,15 @@ class _HomeScreenState extends State<HomeScreen> {
               margin: EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.all(15),
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.18,
               decoration: BoxDecoration(
-                color: AppColors.lgrey,
                 borderRadius: BorderRadius.circular(15),
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFE8E7E7),
+                    Colors.white,
+                  ],
+                  begin: AlignmentGeometry.topLeft,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Welcome",
                     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
                   Text(
                     "Let's the work begins !",
                     style: TextStyle(
@@ -132,10 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 15),
-
-            // ────────────────────────────────
-            // OLD CATEGORY BUTTONS (HOME SCREEN)
-            // ────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -186,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(20),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         backgroundColor: AppColors.black,
                       )
@@ -206,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(20),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                       ),
@@ -215,18 +303,17 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 15),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(color: const Color.fromARGB(255, 204, 203, 203)),
+              child: Divider(
+                color: Color.fromARGB(255, 204, 203, 203),
+              ),
             ),
             SizedBox(height: 15),
             getWork(),
-            // SizedBox(height: 10),
+            SizedBox(height: 85),
           ],
         ),
       ),
 
-      // ─────────────────────────────────────────────
-      //  FAB — ADD TASK (MODIFIED WITH CATEGORY)
-      // ─────────────────────────────────────────────
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.black,
         child: Icon(Icons.add, size: 30, color: AppColors.white),
@@ -259,9 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-
                         SizedBox(height: 20),
-
                         Text(
                           "Add Text",
                           style: TextStyle(
@@ -270,11 +355,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         SizedBox(height: 20),
-
                         TextField(
                           controller: todoController,
                           decoration: InputDecoration(
-                            hint: Text("Enter the Text"),
+                            hint: Text("Enter the Text", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -282,7 +366,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-
                     actions: [
                       SizedBox(
                         width: 100,
@@ -292,10 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: AppColors.black,
                           ),
                           onPressed: () {
-                            if (!personal && !office) {
-                              print("No category selected on Home Screen!");
-                              return;
-                            }
+                            if (!personal && !office) return;
 
                             String id = randomAlpha(10);
 
@@ -307,10 +387,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (personal) {
                               DatabaseService().personalTask(usertodo, id);
-                              print("Saving PERSONAL task.");
                             } else {
                               DatabaseService().officeTask(usertodo, id);
-                              print("Saving OFFICE task.");
                             }
 
                             todoController.clear();
