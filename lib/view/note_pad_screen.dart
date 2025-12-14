@@ -1,17 +1,21 @@
+// ignore_for_file: use_super_parameters, use_build_context_synchronously
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finaltodoapp/config/colors.dart';
 import 'package:finaltodoapp/view/add_notes.dart';
 import 'package:finaltodoapp/view/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class NotePadScreen extends StatefulWidget {
-  NotePadScreen({Key? key}) : super(key: key);
+  const NotePadScreen({Key? key}) : super(key: key);
 
   @override
   State<NotePadScreen> createState() => _NotePadScreenState();
 }
 
 class _NotePadScreenState extends State<NotePadScreen> {
-  List<Map<String, String>> notes = [];
+  CollectionReference notesRef =
+      FirebaseFirestore.instance.collection("notes");
 
   void addNewNote() async {
     var result = await Navigator.push(
@@ -22,21 +26,20 @@ class _NotePadScreenState extends State<NotePadScreen> {
     );
 
     if (result != null) {
-      setState(() {
-        notes.add(Map<String, String>.from(result));
+      await notesRef.add({
+        "title": result["title"],
+        "description": result["description"],
+        "createdAt": Timestamp.now(),
       });
     }
   }
 
-  void showDeleteDialog(int index) {
+  void showDeleteDialog(String docId) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(
-            "Delete Note",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          title: Text("Delete Note"),
           content: Text("Are you sure you want to delete this note?"),
           actions: [
             TextButton(
@@ -46,18 +49,16 @@ class _NotePadScreenState extends State<NotePadScreen> {
               child: Text("Cancel"),
             ),
             ElevatedButton(
-              // style: ElevatedButton.styleFrom(
-                
-              // ),
-              onPressed: () {
-                setState(() {
-                  notes.removeAt(index);
-                });
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: AppColors.black),
+              onPressed: () async {
+                await notesRef.doc(docId).delete();
                 Navigator.pop(context);
               },
               child: Text(
                 "Delete",
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                    color: AppColors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -74,17 +75,13 @@ class _NotePadScreenState extends State<NotePadScreen> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => HomeScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
             );
           },
           icon: Icon(Icons.arrow_back, size: 28, color: Colors.black),
         ),
-        title: Text(
-          "Notes",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-        ),
+        title: Text("Notes",
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900)),
         centerTitle: true,
       ),
       body: Container(
@@ -94,71 +91,78 @@ class _NotePadScreenState extends State<NotePadScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: notes.isEmpty
-            ? Center(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: notesRef.orderBy("createdAt", descending: true).snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(
                 child: Text(
                   "No notes added yet",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style:
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              )
-            : ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  var note = notes[index];
+              );
+            }
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddNotes(
-                            title: note['title'],
-                            description: note['description'],
-                          ),
+            return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var doc = snapshot.data!.docs[index];
+                var data = doc.data() as Map<String, dynamic>;
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddNotes(
+                          title: data["title"],
+                          description: data["description"],
                         ),
-                      );
-                    },
-                    onLongPress: () {
-                      showDeleteDialog(index);
-                    },
-                    child: Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.dgrey),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            note['title'] ?? "",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            note['description'] ?? "",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: AppColors.dgrey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    showDeleteDialog(doc.id);
+                  },
+                  child: Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.dgrey),
                     ),
-                  );
-                },
-              ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data["title"] ?? "",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          data["description"] ?? "",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: AppColors.dgrey,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addNewNote,

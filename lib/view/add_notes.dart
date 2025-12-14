@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:finaltodoapp/config/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +7,7 @@ class AddNotes extends StatefulWidget {
   final String? title;
   final String? description;
 
-  AddNotes({Key? key, this.title, this.description}) : super(key: key);
+  const AddNotes({Key? key, this.title, this.description}) : super(key: key);
 
   @override
   State<AddNotes> createState() => _AddNotesState();

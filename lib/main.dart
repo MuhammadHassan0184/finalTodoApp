@@ -1,9 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:finaltodoapp/firebase_options.dart';
-import 'package:finaltodoapp/view/claender_screen.dart';
-import 'package:finaltodoapp/view/login_screen.dart';
-import 'package:finaltodoapp/view/note_pad_screen.dart';
+import 'package:finaltodoapp/view/auth_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -32,11 +30,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: LoginScreen(),
+      // home: LoginScreen(),
       // home: HomeScreen(),
       // home: CalendarScreen(),
       // home: NotePadScreen(),
       // home: AddNotes(),
+
+
+      home: AuthCheck(),
 
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
