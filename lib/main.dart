@@ -30,12 +30,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      
       // home: LoginScreen(),
       // home: HomeScreen(),
       // home: CalendarScreen(),
       // home: NotePadScreen(),
       // home: AddNotes(),
-
 
       home: AuthCheck(),
 

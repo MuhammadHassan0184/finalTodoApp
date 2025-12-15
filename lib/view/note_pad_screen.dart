@@ -14,15 +14,12 @@ class NotePadScreen extends StatefulWidget {
 }
 
 class _NotePadScreenState extends State<NotePadScreen> {
-  CollectionReference notesRef =
-      FirebaseFirestore.instance.collection("notes");
+  CollectionReference notesRef = FirebaseFirestore.instance.collection("notes");
 
   void addNewNote() async {
     var result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => AddNotes(),
-      ),
+      MaterialPageRoute(builder: (context) => AddNotes()),
     );
 
     if (result != null) {
@@ -49,8 +46,7 @@ class _NotePadScreenState extends State<NotePadScreen> {
               child: Text("Cancel"),
             ),
             ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: AppColors.black),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.black),
               onPressed: () async {
                 await notesRef.doc(docId).delete();
                 Navigator.pop(context);
@@ -58,7 +54,9 @@ class _NotePadScreenState extends State<NotePadScreen> {
               child: Text(
                 "Delete",
                 style: TextStyle(
-                    color: AppColors.white, fontWeight: FontWeight.bold),
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -80,8 +78,10 @@ class _NotePadScreenState extends State<NotePadScreen> {
           },
           icon: Icon(Icons.arrow_back, size: 28, color: Colors.black),
         ),
-        title: Text("Notes",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900)),
+        title: Text(
+          "Notes",
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -102,8 +102,7 @@ class _NotePadScreenState extends State<NotePadScreen> {
               return Center(
                 child: Text(
                   "No notes added yet",
-                  style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               );
             }
@@ -130,8 +129,7 @@ class _NotePadScreenState extends State<NotePadScreen> {
                     showDeleteDialog(doc.id);
                   },
                   child: Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: AppColors.white,
@@ -144,7 +142,9 @@ class _NotePadScreenState extends State<NotePadScreen> {
                         Text(
                           data["title"] ?? "",
                           style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -152,8 +152,9 @@ class _NotePadScreenState extends State<NotePadScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: AppColors.dgrey,
-                              fontWeight: FontWeight.bold),
+                            color: AppColors.dgrey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
