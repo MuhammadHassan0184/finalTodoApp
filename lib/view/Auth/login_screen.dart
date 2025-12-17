@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-
-import 'package:finaltodoapp/view/signup_screen.dart';
+import 'package:finaltodoapp/view/Auth/signup_screen.dart';
+import 'package:finaltodoapp/view/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -12,6 +12,7 @@ class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
+
 class LoginController {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -28,25 +29,36 @@ class LoginController {
     }
 
     try {
-      // 🔑 Firebase sign in
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      //  Firebase sign in
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-      // ✅ DO NOT navigate manually
-      // AuthCheck will automatically redirect to HomeScreen
+      if (userCredential.user != null) {
+        // Show welcome message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Welcome back, ${userCredential.user!.email}!")),
+        );
 
+        // Navigate to HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? "Login failed")),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login Error: $e")),
+      );
     }
   }
 }
+
 class _LoginScreenState extends State<LoginScreen> {
   final LoginController controller = LoginController();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
             image: AssetImage("assets/bookbg.jpg"),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.4), // Darken background
+              Colors.black.withOpacity(0.4), 
               BlendMode.darken,
             ),
           ),
@@ -116,16 +128,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                              ),
+                              borderSide: BorderSide(color: Colors.white),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 1.5,
-                              ),
+                              borderSide: BorderSide(color: Colors.white, width: 1.5),
                             ),
                           ),
                         ),
@@ -147,16 +154,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                              ),
+                              borderSide: BorderSide(color: Colors.white),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 1.5,
-                              ),
+                              borderSide: BorderSide(color: Colors.white, width: 1.5),
                             ),
                           ),
                         ),

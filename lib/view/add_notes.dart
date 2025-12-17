@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 class AddNotes extends StatefulWidget {
   final String? title;
   final String? description;
+  final String? docId;
 
-  const AddNotes({Key? key, this.title, this.description}) : super(key: key);
+  const AddNotes({Key? key, this.title, this.description, this.docId})
+      : super(key: key);
 
   @override
   State<AddNotes> createState() => _AddNotesState();
@@ -35,7 +37,7 @@ class _AddNotesState extends State<AddNotes> {
           icon: Icon(Icons.arrow_back, size: 28, color: Colors.black),
         ),
         title: Text(
-          "Add Notes",
+          widget.docId == null ? "Add Notes" : "Edit Notes",
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
         ),
         centerTitle: true,
@@ -52,7 +54,6 @@ class _AddNotesState extends State<AddNotes> {
           children: [
             SizedBox(height: 20),
 
-            // TITLE
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
               height: 60,
@@ -74,7 +75,6 @@ class _AddNotesState extends State<AddNotes> {
 
             SizedBox(height: 20),
 
-            // DESCRIPTION
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
               height: MediaQuery.of(context).size.height * 0.6,
@@ -97,7 +97,6 @@ class _AddNotesState extends State<AddNotes> {
 
             SizedBox(height: 20),
 
-            // SAVE BUTTON
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
@@ -116,11 +115,13 @@ class _AddNotesState extends State<AddNotes> {
                       Navigator.pop(context, {
                         "title": titleController.text,
                         "description": descController.text,
+                        "docId": widget.docId,
                       });
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Please enter title & description"),
+                          content:
+                              Text("Please enter title & description"),
                         ),
                       );
                     }

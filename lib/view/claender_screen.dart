@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:finaltodoapp/view/home_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter/material.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -24,7 +24,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // white background
+      backgroundColor: Colors.white, 
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {

@@ -1,13 +1,13 @@
 // ignore_for_file: avoid_print, deprecated_member_use
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finaltodoapp/config/colors.dart';
 import 'package:finaltodoapp/Services/database_service.dart';
-import 'package:finaltodoapp/view/claender_screen.dart';
+import 'package:finaltodoapp/view/Auth/login_screen.dart';
 import 'package:finaltodoapp/view/note_pad_screen.dart';
+import 'package:finaltodoapp/view/claender_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
+import 'package:finaltodoapp/config/colors.dart';
+import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -80,53 +80,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               )
-            : CircularProgressIndicator();
+           : CircularProgressIndicator();
       },
     );
   }
-
   // ─────────────────────────────────────────────
   // LOGOUT FUNCTION
   // ─────────────────────────────────────────────
-  void logout() {
+void logout() {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(
-        "Logout",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
+      title: Text("Logout", style: TextStyle(fontWeight: FontWeight.bold)),
       content: Text("Are you sure you want to logout?"),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context), 
           child: Text(
             "Cancel",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
         ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
           onPressed: () async {
-            await FirebaseAuth.instance.signOut();
-            Navigator.pop(context); // close dialog
+            await FirebaseAuth.instance.signOut(); 
+
+            Navigator.pop(context); 
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false,
+            );
           },
           child: Text(
             "Logout",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
       ],
     ),
   );
 }
+
+
+
 
   @override
   Widget build(BuildContext context) {

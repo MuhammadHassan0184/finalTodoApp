@@ -1,9 +1,9 @@
 // ignore_for_file: use_super_parameters, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finaltodoapp/config/colors.dart';
-import 'package:finaltodoapp/view/add_notes.dart';
 import 'package:finaltodoapp/view/home_screen.dart';
+import 'package:finaltodoapp/view/add_notes.dart';
+import 'package:finaltodoapp/config/colors.dart';
 import 'package:flutter/material.dart';
 
 class NotePadScreen extends StatefulWidget {
@@ -14,7 +14,8 @@ class NotePadScreen extends StatefulWidget {
 }
 
 class _NotePadScreenState extends State<NotePadScreen> {
-  CollectionReference notesRef = FirebaseFirestore.instance.collection("notes");
+  CollectionReference notesRef =
+      FirebaseFirestore.instance.collection("notes");
 
   void addNewNote() async {
     var result = await Navigator.push(
@@ -46,7 +47,9 @@ class _NotePadScreenState extends State<NotePadScreen> {
               child: Text("Cancel"),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.black),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.black,
+              ),
               onPressed: () async {
                 await notesRef.doc(docId).delete();
                 Navigator.pop(context);
@@ -114,22 +117,31 @@ class _NotePadScreenState extends State<NotePadScreen> {
                 var data = doc.data() as Map<String, dynamic>;
 
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    var result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AddNotes(
                           title: data["title"],
                           description: data["description"],
+                          docId: doc.id,
                         ),
                       ),
                     );
+
+                    if (result != null) {
+                      await notesRef.doc(doc.id).update({
+                        "title": result["title"],
+                        "description": result["description"],
+                      });
+                    }
                   },
                   onLongPress: () {
                     showDeleteDialog(doc.id);
                   },
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: AppColors.white,
@@ -166,8 +178,9 @@ class _NotePadScreenState extends State<NotePadScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.black,
         onPressed: addNewNote,
-        child: Icon(Icons.note_add),
+        child: Icon(Icons.note_add, color: AppColors.white,),
       ),
     );
   }

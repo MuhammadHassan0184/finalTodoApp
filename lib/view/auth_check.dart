@@ -1,7 +1,7 @@
+import 'package:finaltodoapp/view/splash+screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'login_screen.dart';
 
 class AuthCheck extends StatelessWidget {
   // ignore: use_super_parameters
@@ -25,7 +25,7 @@ class AuthCheck extends StatelessWidget {
         }
 
         // User NOT logged in
-        return LoginScreen();
+        return Splash();
       },
     );
   }
