@@ -9,7 +9,7 @@ class AddNotes extends StatefulWidget {
   final String? docId;
 
   const AddNotes({Key? key, this.title, this.description, this.docId})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<AddNotes> createState() => _AddNotesState();
@@ -66,7 +66,7 @@ class _AddNotesState extends State<AddNotes> {
                 controller: titleController,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
-                  hintText: "Title",
+                  hintText: "Title..",
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(15),
                 ),
@@ -120,8 +120,7 @@ class _AddNotesState extends State<AddNotes> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content:
-                              Text("Please enter title & description"),
+                          content: Text("Please enter title & description"),
                         ),
                       );
                     }
